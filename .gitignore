@@ -1,2 +1,7 @@
-# Ignore compiled code
+# Ignore artifacts
 *.exe
+*.o
+
+# Ignore VSCode specific settings
+# (Use the Makefile to run with standard settings)
+.vscode/**/*

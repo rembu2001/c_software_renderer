@@ -2,6 +2,12 @@
 
 A barebones 3D renderer entirely in C.
 
-## Motivation
+## Intro
+
+### Motivation
 
 My own introduction to C (maybe a little ambitious) is to build a 3D renderer in C. The following project is the ongoing result.
+
+### Use
+
+Run `make` to invoke `Makefile` and create `renderer.exe`.
