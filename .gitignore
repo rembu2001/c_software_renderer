@@ -1,6 +1,7 @@
 # Ignore artifacts
 *.exe
 *.o
+/obj
 
 # Ignore VSCode specific settings
 # (Use the Makefile to run with standard settings)

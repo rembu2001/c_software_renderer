@@ -3,6 +3,7 @@ EXE = renderer
 
 SRC_DIR = src
 INC_DIR = include
+OBJ_DIR = obj
 
 
 CFLAGS = -I$(INC_DIR) -Wall -Wextra -Werror -Wshadow -Wdouble-promotion \
@@ -12,13 +13,18 @@ CFLAGS = -I$(INC_DIR) -Wall -Wextra -Werror -Wshadow -Wdouble-promotion \
 
 DEPS = $(wildcard $(INC_DIR)/*.h)
 
-SRC = $(wildcard $(SRC_DIR)/*.c) main.c
-OBJ = $(SRC:%.c=%.o)
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC))
+
+$(OBJ_DIR)/%.o : $(SRC_DIR)/%.c $(DEPS)
+	mkdir -p obj
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
 clean:
 	-rm -r $(OBJ)
 	-rm -r $(EXE)
+	-rmdir $(OBJ_DIR)
