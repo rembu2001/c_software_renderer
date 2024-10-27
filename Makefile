@@ -21,7 +21,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) -lopengl32 -lgdi32
 
 .PHONY: clean
 clean:

@@ -6,7 +6,11 @@ Run `make` to create `renderer.exe`.
 
 ## Implementation
 
-Runs on Windows using the Win32 API
+### Planned ->
+
+Create frames with pixel matrices display-agnostically
+
+For windows -> display a bitmap on the screen that gets updated based on a timer for every frame, and loads data from a pixel matrix.
 
 ## References
 
