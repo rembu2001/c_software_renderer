@@ -6,7 +6,7 @@
 
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
-#define REFRESH_RATE_MILLISECONDS 50
+#define REFRESH_RATE_MILLISECONDS 10
 
 /* The timer that will indicate when to update the frame window */
 const int ID_TIMER = 1;
@@ -90,10 +90,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     case WM_TIMER:
     {
+        RECT rcClient;
+        HDC hdc = GetDC(hwnd);
+
+        GetClientRect(hwnd, &rcClient);
+
         BITMAP bm;
         PAINTSTRUCT ps;
-
-        HDC hdc = BeginPaint(hwnd, &ps);
 
         HDC hdcMem = CreateCompatibleDC(hdc);
         HBITMAP hbmOld = SelectObject(hdcMem, global_bitmap);
@@ -115,6 +118,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         DeleteDC(hdcMem);
 
         EndPaint(hwnd, &ps);
+
+        ReleaseDC(hwnd, hdc);
         break;
     }
     default:
