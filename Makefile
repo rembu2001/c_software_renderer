@@ -5,6 +5,8 @@ SRC_DIR = src
 INC_DIR = include
 OBJ_DIR = obj
 
+LIBS = -lopengl32 -lgdi32
+
 
 CFLAGS = -I$(INC_DIR) -Wall -Wextra -Wshadow -Wdouble-promotion \
 		 -Wformat=2 -Wformat-truncation=2 -Wundef -fno-common \
@@ -21,7 +23,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) -lopengl32 -lgdi32
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 clean:

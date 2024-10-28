@@ -1,6 +1,6 @@
 # Renderer
 
-A zero dependency software renderer written in C.
+A software renderer written in C using the Win32 API
 
 Run `make` to create `renderer.exe`.
 
@@ -10,7 +10,7 @@ Run `make` to create `renderer.exe`.
 
 Create frames with pixel matrices display-agnostically
 
-For windows -> display a bitmap on the screen that gets updated based on a timer for every frame, and loads data from a pixel matrix.
+Display a bitmap on the screen that gets updated based on a timer for every frame, and loads data from a pixel matrix.
 
 ## References
 

@@ -2,6 +2,7 @@
 
 #include <windows.h>
 #include <winuser.h>
+#include <pixels.h>
 
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
@@ -41,24 +42,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CREATE:
     {
-        // Temporarily arbitrary produce the image
-        for (int i = 0; i < INITIAL_WINDOW_HEIGHT; i++)
-        {
-            for (int j = 0; j < INITIAL_WINDOW_WIDTH; j++)
-            {
-                // note the color format,
-                // 0x AL RE GR BL
-                pixels[i][j] = 0x00FF00FF;
-            }
-        }
-        ///////////////////////////////////////////
-
         /* On window creation,
-            1. Create the bitmap resources
-            2. Start a timer to send regular messages to the windows
+            1. Initialize the pixel matrix
+            2. Create the bitmap resources
+            3. Start a timer to send regular messages to the window
                procedure to update the global bitmap every frame. */
         long long unsigned int timer_success;
         BITMAP bm;
+
+        write_frame_zero(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 
         global_bitmap = CreateBitmap(
             INITIAL_WINDOW_WIDTH,
@@ -98,14 +90,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     case WM_TIMER:
     {
-        RECT rcClient;
-        HDC hdc = GetDC(hwnd);
+        BITMAP bm;
+        PAINTSTRUCT ps;
 
-        GetClientRect(hwnd, &rcClient);
+        HDC hdc = BeginPaint(hwnd, &ps);
 
-        DrawFrame(hdc, &rcClient);
+        HDC hdcMem = CreateCompatibleDC(hdc);
+        HBITMAP hbmOld = SelectObject(hdcMem, global_bitmap);
 
-        ReleaseDC(hwnd, hdc);
+        draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+
+        global_bitmap = CreateBitmap(
+            INITIAL_WINDOW_WIDTH,
+            INITIAL_WINDOW_HEIGHT,
+            1,
+            32,
+            pixels);
+
+        GetObject(global_bitmap, sizeof(bm), &bm);
+
+        BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+        SelectObject(hdcMem, hbmOld);
+        DeleteDC(hdcMem);
+
+        EndPaint(hwnd, &ps);
         break;
     }
     default:
