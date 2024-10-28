@@ -42,25 +42,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_CREATE:
     {
-        /* On window creation,
-            1. Initialize the pixel matrix
-            2. Create the bitmap resources
-            3. Start a timer to send regular messages to the window
-               procedure to update the global bitmap every frame. */
         long long unsigned int timer_success;
         BITMAP bm;
 
+        /* 1. Initialize pixel matrix*/
         write_frame_zero(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 
+        /* 2. Create BitMap resources */
         global_bitmap = CreateBitmap(
             INITIAL_WINDOW_WIDTH,
             INITIAL_WINDOW_HEIGHT,
             1,
             32,
             pixels);
-
         GetObject(global_bitmap, sizeof(bm), &bm);
 
+        /* 3. Start the timer */
         timer_success = SetTimer(hwnd, ID_TIMER, REFRESH_RATE_MILLISECONDS, NULL);
         if (timer_success == 0)
         {
@@ -70,6 +67,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     case WM_PAINT:
     {
+        /* Load the global bitmap */
         BITMAP bm;
         PAINTSTRUCT ps;
 
@@ -80,6 +78,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         GetObject(global_bitmap, sizeof(bm), &bm);
 
+        /* Paint the bitmap in the window */
         BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
         SelectObject(hdcMem, hbmOld);
@@ -93,25 +92,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         RECT rcClient;
         HDC hdc = GetDC(hwnd);
 
-        GetClientRect(hwnd, &rcClient);
-
         BITMAP bm;
         PAINTSTRUCT ps;
 
         HDC hdcMem = CreateCompatibleDC(hdc);
         HBITMAP hbmOld = SelectObject(hdcMem, global_bitmap);
 
+        GetClientRect(hwnd, &rcClient);
+
+        /* Update the pixel matrix for the next frame */
         draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 
+        /* Update the global bitmap with the new frame data*/
         global_bitmap = CreateBitmap(
             INITIAL_WINDOW_WIDTH,
             INITIAL_WINDOW_HEIGHT,
             1,
             32,
             pixels);
-
         GetObject(global_bitmap, sizeof(bm), &bm);
 
+        /* Load the bitmap to the window */
         BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
 
         SelectObject(hdcMem, hbmOld);

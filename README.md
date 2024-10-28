@@ -12,7 +12,10 @@ Create frames with pixel matrices display-agnostically
 
 Display a bitmap on the screen that gets updated based on a timer for every frame, and loads data from a pixel matrix.
 
-Need to replace W_TIMER with something more consistent
+When the timer elapses, load the previously created pixel matrix to the bitmap, and start creating the next one.
+
+Creating the next one:
+    Create environment + camera data to render from -> Render data to pixel matrix
 
 ## References
 
