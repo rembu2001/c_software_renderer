@@ -19,4 +19,5 @@ Creating the next one:
 
 ## References
 
-+ [Microsoft Learn: Winuser.h](https://learn.microsoft.com/en-us/windows/win32/api/winuser/), and [theForger's Win32 API Programming Tutorial](http://www.winprog.org/tutorial/simple_window.html)  for interacting with Windows.
++ [Microsoft Learn: Winuser.h](https://learn.microsoft.com/en-us/windows/win32/api/winuser/), and [theForger's Win32 API Programming Tutorial](http://www.winprog.org/tutorial/simple_window.html) for interacting with Windows.
++ [Scratch a pixel](https://www.scratchapixel.com/index.html) for insight into, implementations of, background info on, and the details of Computer Graphics at a high level. 
