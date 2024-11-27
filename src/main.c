@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <winuser.h>
 #include <pixels.h>
+#include <object.h>
 
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
@@ -150,6 +151,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.lpszMenuName = NULL;
     wc.lpszClassName = g_szClassName;
     wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    /* 0. [Testing]
+     * Create an object from `octahedron.h` and expose it's
+     * data to the console. */
+    unsigned int *octahedron_face_count = malloc((size_t)sizeof(unsigned int));
+    char obj_filename[] = "ocatahedron.obj";
+    tri *octahedron = create_object(obj_filename, octahedron_face_count);
+    print_object(octahedron, *octahedron_face_count);
 
     /* Attempt to register the window class with the system */
     if (!RegisterClassEx(&wc))

@@ -1,3 +1,10 @@
+# Object files here expect vectices to be defined as
+#
+# v <vertex_1> <vertex_2> <vertex_3>
+#
+# and faces with their vertices in clockwise ordering
+#
+# f <vertex_A> <vertex_B> <vertex_C>
 #
 #                   5
 #                  / \                          y
