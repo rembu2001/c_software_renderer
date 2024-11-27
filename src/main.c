@@ -156,7 +156,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
      * Create an object from `octahedron.h` and expose it's
      * data to the console. */
     unsigned int *octahedron_face_count = malloc((size_t)sizeof(unsigned int));
-    char obj_filename[] = "ocatahedron.obj";
+    char obj_filename[] = "octahedron.obj";
     tri *octahedron = create_object(obj_filename, octahedron_face_count);
     print_object(octahedron, *octahedron_face_count);
 

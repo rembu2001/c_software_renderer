@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <object.h>
+#include <direct.h>
 /**
  * Computes the normal vector of a triangle based on
  * the first two vectors in clockwise order defining
@@ -56,7 +57,9 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     // the open the mesh file with that name
     FILE *obj_file_ptr;
     char c;
-    char path[] = "C:\\Users\\fireb\\src\\github\\personal\\Renderer\\mesh\\octahedron.obj";
+    char *path = malloc((size_t)256);
+    path = strcat(strcat(_getcwd(path, 256), "\\mesh\\"), object_name);
+    // char path[] = "C:\\Users\\fireb\\src\\github\\personal\\Renderer\\mesh\\octahedron.obj";
     printf("path is %s\n", path);
     obj_file_ptr = fopen(path, "r");
     if (obj_file_ptr == NULL)
