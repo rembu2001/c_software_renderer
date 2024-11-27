@@ -6,6 +6,12 @@ Run `make` to create `renderer.exe`.
 
 ## Implementation
 
+### Object Representation
+
+Objects are stored in a `.obj` inspired format, but are handled and parsed by hand (see `octahedron.obj` for an example). 
+
+The format creates objects from a set of vertices labeled `v` and a set of faces constructed by those vertices labeled `f`. All other entries in object files are treated as comments. 
+
 ### Planned ->
 
 Create frames with pixel matrices display-agnostically
