@@ -59,7 +59,6 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     char c;
     char *path = malloc((size_t)256);
     path = strcat(strcat(_getcwd(path, 256), "\\mesh\\"), object_name);
-    // char path[] = "C:\\Users\\fireb\\src\\github\\personal\\Renderer\\mesh\\octahedron.obj";
     printf("path is %s\n", path);
     obj_file_ptr = fopen(path, "r");
     if (obj_file_ptr == NULL)
@@ -160,6 +159,7 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     fclose(obj_file_ptr);
 
     free(points);
+    free(path);
 
     // Store the triangle count at the output parameter and return
     // a pointer to the object.
