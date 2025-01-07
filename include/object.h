@@ -30,6 +30,21 @@ typedef struct
     v norm;
 } tri;
 
+/**
+ * Computes the normal vector of a triangle based on
+ * the first two vectors in clockwise order defining
+ * its edges.
+ */
+v normal(v v1, v v2);
+
+/**
+ * Accepts the name of an object file from the `mesh` directory
+ * and 'creates' the object in space about the origin as an array
+ * of triangles with vertices and normal vectors.
+ */
 tri *create_object(char *object_name, unsigned int *triangle_count);
 
+/**
+ * Outputs an object definition to stdout
+ */
 void print_object(tri *object, unsigned int tri_count);

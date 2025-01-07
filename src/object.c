@@ -3,6 +3,7 @@
 #include <string.h>
 #include <object.h>
 #include <direct.h>
+
 /**
  * Computes the normal vector of a triangle based on
  * the first two vectors in clockwise order defining
@@ -59,7 +60,6 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     char c;
     char *path = malloc((size_t)256);
     path = strcat(strcat(_getcwd(path, 256), "\\mesh\\"), object_name);
-    printf("path is %s\n", path);
     obj_file_ptr = fopen(path, "r");
     if (obj_file_ptr == NULL)
     {
@@ -167,6 +167,9 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     return object;
 }
 
+/**
+ * Outputs an object definition to stdout
+ */
 void print_object(tri *object, unsigned int tri_count)
 {
     printf("+----------------+ Object  Definition +------------------+\n");
