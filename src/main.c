@@ -1,12 +1,31 @@
 /* Windows API Window Reference: http://www.winprog.org/tutorial/simple_window.html */
 
 #include <windows.h>
+#include <winuser.h>
+#include <pixels.h>
+#include <object.h>
+#include <camera.h>
+#include <raster.h>
+#include <stdio.h>
 
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
+#define CANVAS_WIDTH 3.0
+#define CANVAS_HEIGHT 3.0
+#define REFRESH_RATE_MILLISECONDS 10
+
+/* The timer that will indicate when to update the frame window */
+const int ID_TIMER = 1;
 
 /* Name of the window class to-be registered with the system. */
 const char g_szClassName[] = "RendererWindowClass";
+
+/* Global bitmap pointer that will always contain the most
+ * recent frame data (most recently generated pixel matrix) */
+HBITMAP global_bitmap = NULL;
+
+/* Global array of pixels representing the current frame*/
+int pixels[INITIAL_WINDOW_HEIGHT][INITIAL_WINDOW_WIDTH];
 
 /* The Window Procedure: Handles incoming messages from the message loop (msg),
  * associated with the handle for the window (hwnd). */
@@ -21,8 +40,95 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
+        /* On window destroy, destory the timer, window,
+         * and BitMap resources */
+        KillTimer(hwnd, ID_TIMER);
+        DeleteObject(global_bitmap);
         PostQuitMessage(0);
         break;
+    case WM_CREATE:
+    {
+        long long unsigned int timer_success;
+        BITMAP bm;
+
+        /* 1. Initialize pixel matrix*/
+        write_frame_zero(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+
+        /* 2. Create BitMap resources */
+        global_bitmap = CreateBitmap(
+            INITIAL_WINDOW_WIDTH,
+            INITIAL_WINDOW_HEIGHT,
+            1,
+            32,
+            pixels);
+        GetObject(global_bitmap, sizeof(bm), &bm);
+
+        /* 3. Start the timer */
+        timer_success = SetTimer(hwnd, ID_TIMER, REFRESH_RATE_MILLISECONDS, NULL);
+        if (timer_success == 0)
+        {
+            MessageBox(hwnd, "Could not SetTimer()!", "Error", MB_OK | MB_ICONEXCLAMATION);
+        }
+        break;
+    }
+    case WM_PAINT:
+    {
+        /* Load the global bitmap */
+        BITMAP bm;
+        PAINTSTRUCT ps;
+
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        HDC hdcMem = CreateCompatibleDC(hdc);
+        HBITMAP hbmOld = SelectObject(hdcMem, global_bitmap);
+
+        GetObject(global_bitmap, sizeof(bm), &bm);
+
+        /* Paint the bitmap in the window */
+        BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+        SelectObject(hdcMem, hbmOld);
+        DeleteDC(hdcMem);
+
+        EndPaint(hwnd, &ps);
+        break;
+    }
+    case WM_TIMER:
+    {
+        RECT rcClient;
+        HDC hdc = GetDC(hwnd);
+
+        BITMAP bm;
+        PAINTSTRUCT ps;
+
+        HDC hdcMem = CreateCompatibleDC(hdc);
+        HBITMAP hbmOld = SelectObject(hdcMem, global_bitmap);
+
+        GetClientRect(hwnd, &rcClient);
+
+        /* Update the pixel matrix for the next frame */
+        draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+
+        /* Update the global bitmap with the new frame data*/
+        global_bitmap = CreateBitmap(
+            INITIAL_WINDOW_WIDTH,
+            INITIAL_WINDOW_HEIGHT,
+            1,
+            32,
+            pixels);
+        GetObject(global_bitmap, sizeof(bm), &bm);
+
+        /* Load the bitmap to the window */
+        BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
+
+        SelectObject(hdcMem, hbmOld);
+        DeleteDC(hdcMem);
+
+        EndPaint(hwnd, &ps);
+
+        ReleaseDC(hwnd, hdc);
+        break;
+    }
     default:
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
@@ -50,6 +156,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.lpszMenuName = NULL;
     wc.lpszClassName = g_szClassName;
     wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+
+    /* 0.1. [Testing Object]
+     * Create an object from `octahedron.h` and expose it's
+     * data to the console. */
+    unsigned int *octahedron_face_count = malloc((size_t)sizeof(unsigned int));
+    char obj_filename[] = "octahedron.obj";
+    tri *octahedron = create_object(obj_filename, octahedron_face_count);
+    print_object(octahedron, *octahedron_face_count);
+
+    /* 0.2. [Testing Raster]
+     * Create a camera and use it to transform world points
+     * to rasterized points. */
+    camera *cam = default_camera();
+    p octahedron_top_world = {0, 1, 0};
+    pixel *octahedron_top_raster = malloc(sizeof(pixel));
+    float *canvas_width = malloc(sizeof(float));
+    float *canvas_height = malloc(sizeof(float));
+    *canvas_width = CANVAS_WIDTH;
+    *canvas_height = CANVAS_HEIGHT;
+    int *window_width = malloc(sizeof(int));
+    int *window_height = malloc(sizeof(int));
+    *window_width = INITIAL_WINDOW_WIDTH;
+    *window_height = INITIAL_WINDOW_HEIGHT;
+    int visible = rasterize_point(
+        octahedron_top_world,
+        cam,
+        canvas_width,
+        canvas_height,
+        window_width,
+        window_height,
+        octahedron_top_raster);
+    printf("Top of octahedron is on screen? %d @ x: %d, y: %d", visible, octahedron_top_raster->x, octahedron_top_raster->y);
 
     /* Attempt to register the window class with the system */
     if (!RegisterClassEx(&wc))

@@ -5,10 +5,12 @@ SRC_DIR = src
 INC_DIR = include
 OBJ_DIR = obj
 
+LIBS = -lopengl32 -lgdi32
 
-CFLAGS = -I$(INC_DIR) -Wall -Wextra -Wshadow -Wdouble-promotion \
+
+CFLAGS = -I$(INC_DIR) -g -Wall -Wextra -Wshadow -Wdouble-promotion \
 		 -Wformat=2 -Wformat-truncation=2 -Wundef -fno-common \
-		 -Wstack-usage=255 -Wconversion -Os -ffunction-sections \
+		 -Wstack-usage=255 -Wconversion -ffunction-sections \
 		 -fdata-sections -Wpadded -fno-short-enums
 
 DEPS = $(wildcard $(INC_DIR)/*.h)
@@ -21,7 +23,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXE): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 clean:
