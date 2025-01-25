@@ -8,3 +8,15 @@ void write_frame_zero(int *destination, int width, int height);
 /* Paints the next black pixel red from top left to bottom right,
  * filling the rows first. */
 void draw_next_pixel(int *destination, int width, int height);
+
+/**
+ * Draws the corners of a given object on screen.
+ */
+void draw_obj_corners(
+    tri *faces, unsigned int face_count,
+    int *destination,
+    camera *cam,
+    float *canvas_width,
+    float *canvas_height,
+    int *window_width,
+    int *window_height);

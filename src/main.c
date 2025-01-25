@@ -2,16 +2,17 @@
 
 #include <windows.h>
 #include <winuser.h>
-#include <pixels.h>
-#include <object.h>
-#include <camera.h>
-#include <raster.h>
+// #include <pixels.h>
+// #include <object.h>
+// #include <camera.h>
+// #include <raster.h>
 #include <stdio.h>
+#include <defs.h>
 
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
-#define CANVAS_WIDTH 3.0
-#define CANVAS_HEIGHT 3.0
+#define CANVAS_WIDTH 5.0f
+#define CANVAS_HEIGHT 2.0f
 #define REFRESH_RATE_MILLISECONDS 10
 
 /* The timer that will indicate when to update the frame window */
@@ -26,6 +27,15 @@ HBITMAP global_bitmap = NULL;
 
 /* Global array of pixels representing the current frame*/
 int pixels[INITIAL_WINDOW_HEIGHT][INITIAL_WINDOW_WIDTH];
+
+/* Global variables storing camera, scenes, and rendering info */
+tri *rendered_obj_faces;
+unsigned int rendered_obj_face_num;
+camera *viewer_camera;
+float *canvas_width;
+float *canvas_height;
+int *window_width;
+int *window_height;
 
 /* The Window Procedure: Handles incoming messages from the message loop (msg),
  * associated with the handle for the window (hwnd). */
@@ -107,7 +117,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         GetClientRect(hwnd, &rcClient);
 
         /* Update the pixel matrix for the next frame */
-        draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+        // draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+
+        /* Draw corners of the object */
+        draw_obj_corners(
+            rendered_obj_faces,
+            rendered_obj_face_num,
+            &pixels[0][0],
+            viewer_camera,
+            canvas_width,
+            canvas_height,
+            window_width,
+            window_height);
 
         /* Update the global bitmap with the new frame data*/
         global_bitmap = CreateBitmap(
@@ -170,24 +191,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
      * to rasterized points. */
     camera *cam = default_camera();
     p octahedron_top_world = {0, 1, 0};
-    pixel *octahedron_top_raster = malloc(sizeof(pixel));
-    float *canvas_width = malloc(sizeof(float));
-    float *canvas_height = malloc(sizeof(float));
-    *canvas_width = CANVAS_WIDTH;
-    *canvas_height = CANVAS_HEIGHT;
-    int *window_width = malloc(sizeof(int));
-    int *window_height = malloc(sizeof(int));
+    pixel *octahedron_top_raster = (pixel *)malloc(sizeof(pixel));
+    float *scene_canvas_width = (float *)malloc(sizeof(float));
+    float *scene_canvas_height = (float *)malloc(sizeof(float));
+    *scene_canvas_width = CANVAS_WIDTH;
+    *scene_canvas_height = CANVAS_HEIGHT;
+    window_width = (int *)malloc(sizeof(int));
+    window_height = (int *)malloc(sizeof(int));
     *window_width = INITIAL_WINDOW_WIDTH;
     *window_height = INITIAL_WINDOW_HEIGHT;
     int visible = rasterize_point(
         octahedron_top_world,
         cam,
-        canvas_width,
-        canvas_height,
+        scene_canvas_width,
+        scene_canvas_height,
         window_width,
         window_height,
         octahedron_top_raster);
     printf("Top of octahedron is on screen? %d @ x: %d, y: %d", visible, octahedron_top_raster->x, octahedron_top_raster->y);
+
+    /* 0.3 [Testing Raster Corners]
+     * Initialize global variables defining scene dependencies
+     */
+    rendered_obj_faces = octahedron;
+    rendered_obj_face_num = *octahedron_face_count;
+    viewer_camera = cam;
+    canvas_width = (float *)malloc(sizeof(float));
+    canvas_height = (float *)malloc(sizeof(float));
+    *canvas_width = CANVAS_WIDTH;
+    *canvas_height = CANVAS_HEIGHT;
+    window_width = (int *)malloc(sizeof(int));
+    window_height = (int *)malloc(sizeof(int));
+    *window_width = INITIAL_WINDOW_WIDTH;
+    *window_height = INITIAL_WINDOW_HEIGHT;
 
     /* Attempt to register the window class with the system */
     if (!RegisterClassEx(&wc))

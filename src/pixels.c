@@ -40,8 +40,8 @@ void write_frame_zero(int *destination, int width, int height)
  * without making a mess at the global level.
  */
 void draw_obj_corners(
-    tri *faces, int face_count,
-    int *destination, int width, int height,
+    tri *faces, unsigned int face_count,
+    int *destination,
     camera *cam,
     float *canvas_width,
     float *canvas_height,
@@ -49,6 +49,8 @@ void draw_obj_corners(
     int *window_height)
 {
     // All pixels black
+    int width = *window_width;
+    int height = *window_height;
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
@@ -60,7 +62,7 @@ void draw_obj_corners(
     pixel rastered_1;
     pixel rastered_2;
     pixel rastered_3;
-    for (int i = 0; i < face_count; i++)
+    for (int i = 0; i < (int)face_count; i++)
     {
         int rastered_1_visible = rasterize_point(
             faces[i].v1.p1,
@@ -86,9 +88,18 @@ void draw_obj_corners(
             window_width,
             window_height,
             &rastered_3);
-        *(destination + rastered_1.x * width + rastered_1.y) = 0xFFFFFF00;
-        *(destination + rastered_2.x * width + rastered_2.y) = 0xFFFFFF00;
-        *(destination + rastered_3.x * width + rastered_3.y) = 0xFFFFFF00;
+        if (rastered_1_visible)
+        {
+            *(destination + rastered_1.x * width + rastered_1.y) = 0x00FFFFFF;
+        }
+        if (rastered_2_visible)
+        {
+            *(destination + rastered_2.x * width + rastered_2.y) = 0x00FFFFFF;
+        }
+        if (rastered_3_visible)
+        {
+            *(destination + rastered_3.x * width + rastered_3.y) = 0x00FFFFFF;
+        }
     }
 }
 
