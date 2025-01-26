@@ -151,3 +151,11 @@ void draw_obj_corners(
     float *canvas_height,
     int *window_width,
     int *window_height);
+
+/**
+ * Performs a rotation on a camera according to the Euler angles
+ * alpha, beta, and gamma (but does not alter the original
+ * coordinate system, i.e. inv(inv(W->C))).
+ * See https://en.wikipedia.org/wiki/Euler_angles#Table_of_matrices
+ */
+void rotate_camera(camera *cam, float alpha, float beta, float gamma);

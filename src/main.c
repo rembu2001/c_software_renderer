@@ -124,7 +124,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         // draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
 
         /* Draw corners of the object */
-        draw_obj_corners(
+        draw_obj_edges(
             rendered_obj_faces,
             rendered_obj_face_num,
             &pixels[0][0],
@@ -133,6 +133,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             canvas_height,
             window_width,
             window_height);
+
+        /* Rotate the camera */
+        rotate_camera(viewer_camera, 0.01f, 0.01f, 0.003f);
 
         /* Update the global bitmap with the new frame data*/
         global_bitmap = CreateBitmap(
