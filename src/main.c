@@ -9,9 +9,13 @@
 #include <stdio.h>
 #include <defs.h>
 
+/**
+ * TODO: fix header files and declerations / organize
+ */
+
 #define INITIAL_WINDOW_WIDTH 700
 #define INITIAL_WINDOW_HEIGHT 500
-#define CANVAS_WIDTH 5.0f
+#define CANVAS_WIDTH 2.0f
 #define CANVAS_HEIGHT 2.0f
 #define REFRESH_RATE_MILLISECONDS 10
 

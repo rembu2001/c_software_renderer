@@ -101,11 +101,10 @@ int rasterize_point(
         cameraPoint.x / -cameraPoint.z,
         cameraPoint.y / -cameraPoint.z};
 
-    // If the pixel is outside the Canvas, stop computation early
-    if (canvasP.x > *canvasWidth || canvasP.x < -(*canvasWidth) || canvasP.y > *canvasHeight || canvasP.y < -(*canvasHeight))
-    {
-        return 0;
-    };
+    /**
+     * TODO: fix this, it is not identifying pixels outside the canvas
+     * correctly so it tries to draw pixels that are off screen
+     */
 
     // 3. Screen Space -> Normalized Device Coordinates
     fPoint ndcP = {
@@ -115,6 +114,12 @@ int rasterize_point(
     // 4. NDC -> Raster Space
     dest->x = (int)(ndcP.x * (float)*screenWidth);
     dest->y = (int)(((float)1.0 - ndcP.y) * (float)*screenHeight);
+
+    // If the pixel is outside the Canvas, point is not visible.
+    if (canvasP.x > *canvasWidth || canvasP.x < -(*canvasWidth) || canvasP.y > *canvasHeight || canvasP.y < -(*canvasHeight))
+    {
+        return 0;
+    }
 
     return 1;
 };

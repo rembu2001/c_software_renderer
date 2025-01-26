@@ -2,6 +2,8 @@
 #include <raster.h>
 #include <camera.h>
 
+#include <stdio.h>
+
 /* Writes the pixel data from the source matrix to the destination matrix */
 void write_pixels(int *source, int *destination, int width, int height)
 {
@@ -34,10 +36,6 @@ void write_frame_zero(int *destination, int width, int height)
  * this function is currently unusable because it requires
  * objects defined in WinMain to be passed in as arguments
  * from a TIMER callback function.
- *
- * TODO: Figure out how to save objects like the camera
- * somewhere that they can be accessed by all necessary components,
- * without making a mess at the global level.
  */
 void draw_obj_corners(
     tri *faces, unsigned int face_count,
@@ -88,17 +86,18 @@ void draw_obj_corners(
             window_width,
             window_height,
             &rastered_3);
+
         if (rastered_1_visible)
         {
-            *(destination + rastered_1.x * width + rastered_1.y) = 0x00FFFFFF;
+            *(destination + ((rastered_1.y * width) + rastered_1.x)) = 0x00FF0000;
         }
         if (rastered_2_visible)
         {
-            *(destination + rastered_2.x * width + rastered_2.y) = 0x00FFFFFF;
+            *(destination + ((rastered_2.y * width) + rastered_2.x)) = 0x00FF0000;
         }
         if (rastered_3_visible)
         {
-            *(destination + rastered_3.x * width + rastered_3.y) = 0x00FFFFFF;
+            *(destination + ((rastered_3.y * width) + rastered_3.x)) = 0x00FF0000;
         }
     }
 }
