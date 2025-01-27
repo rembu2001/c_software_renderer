@@ -1,21 +1,5 @@
-#include <object.h>
 #include <math.h>
-#include <camera.h>
-#include <raster.h>
-/*
- * "Points in a scene are defined in the world coordinate space.
- * To project them onto the surface of the canvas, however, we first
- * need to convert the 3D point coordinates from world space to camera
- * space. This conversion is accomplished by multiplying the point's
- * world coordinates by the inverse of the camera-to-world matrix.
- *
- * With the point now in camera space, we can accurately compute its
- * 2D coordinates on the canvas using the perspective projection
- * equations, specifically by dividing the point's coordinates by the
- * inverse of the point's z-coordinate."
- *
- * https://www.scratchapixel.com/lessons/3d-basic-rendering/computing-pixel-coordinates-of-3d-point/mathematics-computing-2d-coordinates-of-3d-points.html
- */
+#include <library.h>
 
 /**
  * Given a point in 3d space and a Camera, we can use a series of
@@ -100,11 +84,6 @@ int rasterize_point(
     fPoint canvasP = {
         cameraPoint.x / -cameraPoint.z,
         cameraPoint.y / -cameraPoint.z};
-
-    /**
-     * TODO: fix this, it is not identifying pixels outside the canvas
-     * correctly so it tries to draw pixels that are off screen
-     */
 
     // 3. Screen Space -> Normalized Device Coordinates
     fPoint ndcP = {

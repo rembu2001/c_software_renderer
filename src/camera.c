@@ -1,5 +1,4 @@
-#include <object.h>
-#include <camera.h>
+#include <library.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -18,37 +17,7 @@ camera *default_camera()
         {1, 0, 0, 0},
         {0, 1, 0, 0},
         {0, 0, -1, 0},
-        {0, 0, -2, 1}};
-
-    camera *cam = malloc(sizeof(camera));
-
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            cam->coordinateSystem[i][j] = mat[i][j];
-            cam->inverse[i][j] = mat[i][j];
-        }
-    }
-
-    return cam;
-}
-
-/**
- * A hard coded camera which looks slightly down and to the side
- */
-camera *angled_camera()
-{
-    /**
-     * This hard-coded default World -> Camera matrix
-     * is equal to it's inverse, so we can just use it
-     * for both.
-     */
-    float mat[4][4] = {
-        {1, 0, 0, 0},
-        {0, 1, 0, 0},
-        {0, 0, -1, 0},
-        {0, 0, -2, 1}};
+        {0, 0, -3, 1}};
 
     camera *cam = malloc(sizeof(camera));
 
@@ -73,11 +42,13 @@ camera *angled_camera()
 void rotate_camera(camera *cam, float alpha, float beta, float gamma)
 {
     float mat[4][4];
+    float inv_copy[4][4];
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            mat[i][j] = (cam->inverse)[i][j];
+            mat[i][j] = (cam->coordinateSystem)[i][j];
+            inv_copy[i][j] = (cam->inverse)[i][j];
         }
     }
 
@@ -97,17 +68,34 @@ void rotate_camera(camera *cam, float alpha, float beta, float gamma)
                      {0, 0, 0, 1}};
 
     /**
-     * c_inv = R * c_inv
+     * Coordinate System = Rotation Matrix * Coordinate Sysetm
+     * Invese = Inverse * (Rotation Matrix)^T
      */
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            (cam->inverse)[i][j] =
+            (cam->coordinateSystem)[i][j] =
                 R[i][0] * mat[0][j] +
                 R[i][1] * mat[1][j] +
                 R[i][2] * mat[2][j] +
                 R[i][3] * mat[3][j];
+            /**
+             * The following makes assumptions, here consider
+             * Coordinate System' = Rotation Matrix * Coordinate System
+             * then
+             * Inverse = inv(Coord.Sys) * inv(Rotation)
+             * exlcusing translations, so we calculate the above
+             * while ignoring the outer rows.
+             */
+            if (i != 3 && j != 3)
+            {
+                (cam->inverse)[i][j] =
+                    R[j][0] * inv_copy[i][0] +
+                    R[j][1] * inv_copy[i][1] +
+                    R[j][2] * inv_copy[i][2] +
+                    R[j][3] * inv_copy[i][3];
+            }
         }
     }
 }

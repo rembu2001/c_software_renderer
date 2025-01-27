@@ -10,7 +10,7 @@ LIBS = -lopengl32 -lgdi32
 
 CFLAGS = -I$(INC_DIR) -g -Wall -Wextra -Wshadow -Wdouble-promotion \
 		 -Wformat=2 -Wformat-truncation=2 -Wundef -fno-common \
-		 -Wstack-usage=255 -Wconversion -ffunction-sections \
+		 -Wstack-usage=1000 -Wconversion -ffunction-sections \
 		 -fdata-sections -Wpadded -fno-short-enums
 
 DEPS = $(wildcard $(INC_DIR)/*.h)

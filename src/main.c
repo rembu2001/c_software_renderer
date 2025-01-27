@@ -2,19 +2,10 @@
 
 #include <windows.h>
 #include <winuser.h>
-// #include <pixels.h>
-// #include <object.h>
-// #include <camera.h>
-// #include <raster.h>
-#include <stdio.h>
-#include <defs.h>
+#include <library.h>
 
-/**
- * TODO: fix header files and declerations / organize
- */
-
-#define INITIAL_WINDOW_WIDTH 700
-#define INITIAL_WINDOW_HEIGHT 500
+#define INITIAL_WINDOW_WIDTH 640
+#define INITIAL_WINDOW_HEIGHT 640
 #define CANVAS_WIDTH 2.0f
 #define CANVAS_HEIGHT 2.0f
 #define REFRESH_RATE_MILLISECONDS 10
@@ -120,10 +111,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         GetClientRect(hwnd, &rcClient);
 
-        /* Update the pixel matrix for the next frame */
-        // draw_next_pixel(&pixels[0][0], INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
-
-        /* Draw corners of the object */
+        /* Draw the object mesh */
         draw_obj_edges(
             rendered_obj_faces,
             rendered_obj_face_num,
@@ -185,41 +173,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     wc.lpszClassName = g_szClassName;
     wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-    /* 0.1. [Testing Object]
-     * Create an object from `octahedron.h` and expose it's
-     * data to the console. */
+    /* Create the object in memory from a .obj file. */
     unsigned int *octahedron_face_count = malloc((size_t)sizeof(unsigned int));
     char obj_filename[] = "octahedron.obj";
     tri *octahedron = create_object(obj_filename, octahedron_face_count);
-    print_object(octahedron, *octahedron_face_count);
 
-    /* 0.2. [Testing Raster]
-     * Create a camera and use it to transform world points
-     * to rasterized points. */
+    /* Create the camera, define global scene parameters,
+     * and pass object information up to global storage. */
     camera *cam = default_camera();
-    p octahedron_top_world = {0, 1, 0};
-    pixel *octahedron_top_raster = (pixel *)malloc(sizeof(pixel));
-    float *scene_canvas_width = (float *)malloc(sizeof(float));
-    float *scene_canvas_height = (float *)malloc(sizeof(float));
-    *scene_canvas_width = CANVAS_WIDTH;
-    *scene_canvas_height = CANVAS_HEIGHT;
     window_width = (int *)malloc(sizeof(int));
     window_height = (int *)malloc(sizeof(int));
     *window_width = INITIAL_WINDOW_WIDTH;
     *window_height = INITIAL_WINDOW_HEIGHT;
-    int visible = rasterize_point(
-        octahedron_top_world,
-        cam,
-        scene_canvas_width,
-        scene_canvas_height,
-        window_width,
-        window_height,
-        octahedron_top_raster);
-    printf("Top of octahedron is on screen? %d @ x: %d, y: %d", visible, octahedron_top_raster->x, octahedron_top_raster->y);
-
-    /* 0.3 [Testing Raster Corners]
-     * Initialize global variables defining scene dependencies
-     */
     rendered_obj_faces = octahedron;
     rendered_obj_face_num = *octahedron_face_count;
     viewer_camera = cam;
@@ -227,10 +192,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     canvas_height = (float *)malloc(sizeof(float));
     *canvas_width = CANVAS_WIDTH;
     *canvas_height = CANVAS_HEIGHT;
-    window_width = (int *)malloc(sizeof(int));
-    window_height = (int *)malloc(sizeof(int));
-    *window_width = INITIAL_WINDOW_WIDTH;
-    *window_height = INITIAL_WINDOW_HEIGHT;
 
     /* Attempt to register the window class with the system */
     if (!RegisterClassEx(&wc))
