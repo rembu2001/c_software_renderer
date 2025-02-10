@@ -1,10 +1,10 @@
 # Renderer
 
-A software renderer written in C with no dependencies other than the standard library and Win32 API.
+A software renderer written in C with minimal dependencies (X11, time.sys, standard library).
 
-Currently renders meshes based on a custom object definition, but I'm hoping to add shading, anti-aliasing, and more of the rendering pipeline if I have extra time to come back to this project.
+Currently renders meshes based on a custom object definition, but I'm hoping to add shading, anti-aliasing, and more of the rendering pipeline if I can get this to work with Vulkan. Maybe I'll also get this working with Wayland now that X11 is on its way out.
 
-Run `make` to create `renderer.exe`.
+Run `make` to create `renderer`.
 
 ## Implementation
 
@@ -21,6 +21,6 @@ Points defined in a scene as part of an object are converted to pixels in a rast
 ## References
 
 + [Wikipedia - Euler Angles](https://en.wikipedia.org/wiki/Euler_angles#Table_of_matrices) for coordinate system operations.
-+ [Microsoft Learn: Winuser.h](https://learn.microsoft.com/en-us/windows/win32/api/winuser/), and [theForger's Win32 API Programming Tutorial](http://www.winprog.org/tutorial/simple_window.html) for interacting with Windows.
++ [Development: X.org](https://www.x.org/wiki/Development/) for interacting with Linux.
 + [Scratch a pixel](https://www.scratchapixel.com/index.html) for insight into, implementations of, background info on, and the details of Computer Graphics at a high level. 
 + The 1988 paper [Juan Pineda - A Parellel Algorithm for Polygon Rasterization](https://www.cs.drexel.edu/~deb39/Classes/Papers/comp175-06-pineda.pdf) for an algorithm to find points inside a triangle.

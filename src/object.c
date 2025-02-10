@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <library.h>
-#include <direct.h>
+#include <unistd.h>
 
 /**
  * Computes the normal vector of a triangle based on
@@ -57,28 +57,28 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     // Get the filename from object_name and read
     // the open the mesh file with that name
     FILE *obj_file_ptr;
-    char c;
+    int c;
     char *path = malloc((size_t)256);
-    path = strcat(strcat(_getcwd(path, 256), "\\mesh\\"), object_name);
-    obj_file_ptr = fopen(path, "r");
+    path = strcat(strcat(getcwd(path, 256), "/mesh/"), object_name);
+    obj_file_ptr = fopen(path, "rb");
     if (obj_file_ptr == NULL)
     {
-        perror("obj_file_ptr was null");
+        perror(path);
     }
     // Count the number of triangles in the file
     unsigned int tri_count = 0;
-    while ((c = (char)fgetc(obj_file_ptr)) != EOF)
+    while ((c = fgetc(obj_file_ptr)) != EOF)
     {
-        if (c == 'f')
+        if (c == (int) 'f')
         {
             tri_count = tri_count + 1;
-            while (c != '\n' && c != EOF)
+            while (c != (int) '\n' && c != EOF)
             {
                 c = (char)fgetc(obj_file_ptr);
             }
         }
         else
-            while (c != '\n' && c != EOF)
+            while (c != (int) '\n' && c != EOF)
             {
                 c = (char)fgetc(obj_file_ptr);
             }
@@ -103,7 +103,7 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
     {
         perror("obj_file_ptr was null");
     }
-    while ((c = (char)fgetc(obj_file_ptr)) != EOF)
+    while ((c = fgetc(obj_file_ptr)) != EOF)
     {
         if (c == 'v')
         {
@@ -150,7 +150,7 @@ tri *create_object(char *object_name, unsigned int *triangle_count)
         }
         else
         {
-            while (c != '\n' && c != EOF)
+            while (c != (int) '\n' && c != EOF)
             {
                 c = (char)fgetc(obj_file_ptr);
             }
