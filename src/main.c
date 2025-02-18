@@ -59,9 +59,13 @@ int event_loop(int scr)
 		}
 		break;
 	    case ClientMessage:
-		if (e.xclient.message_type == WM_DELETE_WINDOW) {
+	    	printf("clientmessage received: message type = %lu, data.l = %lu\n", e.xclient.message_type, e.xclient.data.l[0]);
+	    	fflush(stdout);
+		/* if ((Atom) e.xclient.data.l[0] == WM_DELETE_WINDOW) {
+		    printf("WM_DELETE_WINDOW message received\n");
+	    	    fflush(stdout);
 		    running = 0;
-		}
+		} */
 		break;
 	    default:
 		break;
@@ -133,8 +137,12 @@ int main(int argc, char* argv[])
 				
     XStoreName(disp, w, "C Software Renderer (Linux Edition)");
 				
-    WM_DELETE_WINDOW = XInternAtom(disp, "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(disp, w, &WM_DELETE_WINDOW, 1);
+    WM_DELETE_WINDOW = XInternAtom(disp, "WM_DELETE_WINDOW", True);
+    if (WM_DELETE_WINDOW == None) {
+        fprintf(stderr, "failed to set protocol\n");
+        fflush(stderr);
+        exit(1);
+    }
     
     Cursor cursor = XCreateFontCursor(disp, XC_arrow);
     if (cursor) {
